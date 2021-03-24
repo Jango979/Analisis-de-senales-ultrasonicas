@@ -2,7 +2,7 @@ from pandas import read_table
 import os
 from scipy.signal import detrend, butter, sosfiltfilt, medfilt
 from numpy import pi, amax, float
-from matplotlib.pyplot import plot, figure, show, savefig
+from matplotlib.pyplot import plot, figure, show, savefig,close
 from shutil import rmtree
 
 
@@ -110,7 +110,7 @@ class AnalysisByFFT():
         self.MedFiltered = medfilt(self.NoOffset)  # Aplica el filtro de mediana
         # print(self.YFiltered)
 
-    def ApplyLowPass(self, x="Time", y="Intensity", freq=1, ):
+    def ApplyLowPass(self, x="Time", y="Intensity", freq=1 ):
         """Este metodo hace uso del metodo del metodo anterior, aplicandolo pero
         identificandolo si es para una unica señal o para varias señales"""
         if self.Type == "Single":
@@ -141,8 +141,7 @@ class AnalysisByFFT():
                     path = self.Directories[FirstLocation]
                     path = "Huesos Menopausia Osciloscopio\\" + path + "\\" + self.Wished
                     print(path)
-                    self.Df = self.Df = read_table(path, usecols=[3, 4], names=["Time", "Intensity"]).applymap(
-                        "{:.11f}".format).astype(float)
+                    self.Df = self.Df = read_table(path, usecols=[3, 4], names=["Time", "Intensity"]).applymap("{:.11f}".format).astype(float)
                     #Se convierte a Data Frame
                     self.LowPass(x=x, y=y, freq=freq)
                     #Se aplica el filtro pasa - baja
@@ -168,10 +167,10 @@ class AnalysisByFFT():
         namefig = self.Wished.replace(".txt", Group)
 
         #Las graficas son separadas por el tipo de señal deseada, filtered, original o todas
-        figure()
+        figure(1)
         if Group == "Filtered":
             plot(self.Df[x], self.YFiltered)
-            plot(self.Df[x], self.NoOffset)
+            #plot(self.Df[x], self.NoOffset)
             savefig(path + "\\" + namefig + "FFT Filtered")
             # show()
 
@@ -181,13 +180,13 @@ class AnalysisByFFT():
             savefig(path + "\\" + namefig + " NoOffset")
             # show()
 
-            figure()
+            figure(1)
             plot(self.Df[x], self.MedFiltered)
             plot(self.Df[x], self.NoOffset)
             savefig(path + "\\" + namefig + "Median Filtered.png")
             # show()
 
-            figure()
+            figure(1)
             plot(self.Df[x], self.YFiltered)
             plot(self.Df[x], self.NoOffset)
             savefig(path + "\\" + namefig + " FFT Filtered")
@@ -199,6 +198,7 @@ class AnalysisByFFT():
             # show()
             savefig(path + "\\" + namefig + " Original")
             # input("Continue")
+        close(1)
 
         # def IdentifyPeaks()
 
@@ -215,7 +215,7 @@ b = File()
 b.GetAll()
 
 c = AnalysisByFFT(b)
-c.ApplyLowPass()
+c.ApplyLowPass(freq=900)
 # c.Graph(Group="Original") #Solo cuando sean individuales
 
 
